@@ -1,60 +1,55 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Photon.Pun;
+
 
 public class PlayerController : MonoBehaviour
 {
-    [SerializeField] GameObject cameraHolder;
-    [SerializeField] float mouseSensitivity, runSpeed, walkSpeed, jumpForce, smoothTime;
+    public float moveSpeed = 5f;
 
-    private float verticalLookRotation;
-    private bool grounded;
-    Vector3 smoothMoveVelocity;
-    Vector3 moveAmount;
+    public Rigidbody2D rb;
+    public Camera cam;
+    public Animator anim;
 
-    Rigidbody rb;
-    private void Awake()
-    {
-        rb = GetComponent<Rigidbody>();
-    }
+    Vector2 movement;
+    Vector2 mousePos;
 
     private void Update()
     {
-        Look();
+        ProcessInputs();
+
+        anim.SetFloat("Horizontal", movement.x);
+        anim.SetFloat("Vertical", movement.y);
+        anim.SetFloat("Speed", movement.sqrMagnitude);
+
+
+
+
+    }
+    void FixedUpdate()
+    {
         Move();
-        Jump();
+        Vector2 lookDir = mousePos - rb.position;
+        float angle = Mathf.Atan2(lookDir.y, lookDir.x)*Mathf.Rad2Deg-90f;
+        rb.rotation = angle;
+    }
+
+
+    void ProcessInputs()
+    {
+        float moveX = Input.GetAxisRaw("Horizontal");
+        float moveY = Input.GetAxisRaw("Vertical");
+
+        mousePos = cam.ScreenToWorldPoint(Input.mousePosition);
         
     }
 
     void Move()
     {
-        Vector3 moveDir = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical")).normalized;
+        rb.MovePosition(rb.position + movement * moveSpeed * Time.fixedDeltaTime);
+       
 
-        moveAmount = Vector3.SmoothDamp(moveAmount, moveDir * (Input.GetKey(KeyCode.LeftShift) ? runSpeed : walkSpeed),
-            ref smoothMoveVelocity, smoothTime);
     }
 
-    void Look()
-    {
-        transform.Rotate(Vector3.up * Input.GetAxisRaw("Mouse X") * mouseSensitivity);
-
-        verticalLookRotation += Input.GetAxisRaw("Mouse Y") * mouseSensitivity;
-        verticalLookRotation = Mathf.Clamp(verticalLookRotation, -90f, 90f);
-
-        cameraHolder.transform.localEulerAngles = Vector3.left * verticalLookRotation;
-    }
-
-    void Jump()
-    {
-        if (Input.GetKeyDown(KeyCode.Space) && grounded)
-        {
-            rb.AddForce(transform.up * jumpForce);
-        }
-    }
-
-    public void SetGroundedState (bool _grounded)
-    {
-        grounded = _grounded;
-    }
+    
 }
