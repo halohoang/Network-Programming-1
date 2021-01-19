@@ -7,10 +7,9 @@ public class PlayerController : MonoBehaviourPun, IPunObservable
 {
     [SerializeField] SpriteRenderer spriteRenderer;
     [SerializeField] new Rigidbody2D rigidbody;
-    [SerializeField] TrailRenderer trailRenderer;
     
 
-    [SerializeField] UnityEngine.UI.Text nicknameText;
+    [SerializeField] UnityEngine.UI.Text NickNameText;
     [SerializeField] float moveSpeed;
     [SerializeField] Vector2 groundedCheckSize;
     
@@ -20,7 +19,7 @@ public class PlayerController : MonoBehaviourPun, IPunObservable
 
     private void Start()
     {
-        nicknameText.text = photonView.Owner.NickName;
+        NickNameText.text = photonView.Owner.NickName;
         SetLocalColors();
         
     }
@@ -28,17 +27,14 @@ public class PlayerController : MonoBehaviourPun, IPunObservable
     private void SetLocalColors()
     {
         Color color = GetColorForPlayerById(photonView.OwnerActorNr);
-        nicknameText.color = color;
+        NickNameText.color = color;
 
-        trailRenderer.startColor = color;
-        color.a = 0;
-        trailRenderer.endColor = color;
     }
 
-    /*private Color GetColorForPlayerById(int id)
+  private Color GetColorForPlayerById(int id)
     {
         return Color.HSVToRGB((float)id / 10f, 1, 1);
-    }*/
+    }
 
     private void FixedUpdate()
     {
