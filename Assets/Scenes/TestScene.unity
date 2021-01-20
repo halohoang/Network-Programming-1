@@ -520,6 +520,11 @@ PrefabInstance:
       propertyPath: cam
       value: 
       objectReference: {fileID: 1650751171}
+    - target: {fileID: 7411999446132376819, guid: 4de9fd04a92cb43d3a5424f9f0a75396,
+        type: 3}
+      propertyPath: viewIdField
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8102520234850411430, guid: 4de9fd04a92cb43d3a5424f9f0a75396,
         type: 3}
       propertyPath: m_Name
