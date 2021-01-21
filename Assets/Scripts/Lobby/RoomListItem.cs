@@ -11,17 +11,17 @@ namespace SAE
     {
         //Variales
         [SerializeField] TMP_Text text;
-        RoomInfo info;
+        public RoomInfo Info;
 
         //funcions
         public void Setup(RoomInfo _info)
         {
-            info = _info;
-            text.text = info.Name;
+            Info = _info;
+            text.text = Info.Name;
         }
         public void Onclick()
         {
-            Launcher.Instance.JoinRoom(info);
+            Launcher.Instance.JoinRoom(Info);
         }
     }
 }

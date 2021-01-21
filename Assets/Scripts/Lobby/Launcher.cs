@@ -17,8 +17,9 @@ namespace SAE
         [SerializeField] private TMP_Text _roomNameText;
         [SerializeField] private Transform _roomListContent;
         [SerializeField] private GameObject _roomListItemPrefab;
-        [SerializeField]  GameObject playerListItemPrefab;
-        [SerializeField] Transform playerListContent;
+        [SerializeField]  GameObject _playerListItemPrefab;
+        [SerializeField] Transform _playerListContent;
+        [SerializeField] GameObject _startGameButton;
 
         public static Launcher Instance;
         //functions
@@ -35,6 +36,7 @@ namespace SAE
         public override void OnConnectedToMaster()
         {
             PhotonNetwork.JoinLobby();
+            PhotonNetwork.AutomaticallySyncScene = true;
         }
 
         public override void OnJoinedLobby()
@@ -58,18 +60,36 @@ namespace SAE
             _roomNameText.text = PhotonNetwork.CurrentRoom.Name;
 
             Player[] players = PhotonNetwork.PlayerList;
+            foreach(Transform child in _playerListContent)
+            {
+                Destroy(child.gameObject);
+            }
 
             for (int i = 0; i < players.Count(); i++)
             {
-                Instantiate(playerListItemPrefab, playerListContent).GetComponent<PlayerListitem>().SetUp(players[i]);
+                Instantiate(_playerListItemPrefab, _playerListContent).GetComponent<PlayerListitem>().SetUp(players[i]);
 
             }
+            //Only the host can start the game
+            _startGameButton.SetActive(PhotonNetwork.IsMasterClient);
+
+        }
+
+        
+        public override void OnMasterClientSwitched(Player newMasterClient) //Host migration
+        {
+            _startGameButton.SetActive(PhotonNetwork.IsMasterClient);
+
         }
 
         public override void OnCreateRoomFailed(short returnCode, string message)
         {
             errorText.text = "Room Creation failed" + message;
             MenuManager.Instance.OpenMenu("Error");
+        }
+        public void StartGame()
+        {
+            PhotonNetwork.LoadLevel(1);
         }
         public void LeaveRoom()
         {
@@ -97,12 +117,16 @@ namespace SAE
             }
             for (int i = 0; i < roomList.Count; i++)
             {
+                if(roomList[i].RemovedFromList)
+                {
+                    continue;
+                }
                 Instantiate(_roomListItemPrefab, _roomListContent).GetComponent<RoomListItem>().Setup(roomList[i]);
             }
         }
         public override void OnPlayerEnteredRoom(Player newPlayer)
         {
-            Instantiate(playerListItemPrefab, playerListContent).GetComponent<PlayerListitem>().SetUp(newPlayer);
+            Instantiate(_playerListItemPrefab, _playerListContent).GetComponent<PlayerListitem>().SetUp(newPlayer);
         }
         
     }
