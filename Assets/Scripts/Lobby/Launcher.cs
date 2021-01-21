@@ -4,6 +4,7 @@ using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
 using TMPro;
+using System.Linq;
 namespace SAE
 {
 
@@ -16,6 +17,9 @@ namespace SAE
         [SerializeField] private TMP_Text _roomNameText;
         [SerializeField] private Transform _roomListContent;
         [SerializeField] private GameObject _roomListItemPrefab;
+        [SerializeField]  GameObject playerListItemPrefab;
+        [SerializeField] Transform playerListContent;
+
         public static Launcher Instance;
         //functions
         // Start is called before the first frame update
@@ -36,6 +40,7 @@ namespace SAE
         public override void OnJoinedLobby()
         {
             MenuManager.Instance.OpenMenu("Title");
+            PhotonNetwork.NickName = "Operator Serial" + Random.Range(0, 1000).ToString("0000");
         }
         // Update is called once per frame
         public void CreateRoom()
@@ -51,6 +56,14 @@ namespace SAE
         {
             MenuManager.Instance.OpenMenu("Room");
             _roomNameText.text = PhotonNetwork.CurrentRoom.Name;
+
+            Player[] players = PhotonNetwork.PlayerList;
+
+            for (int i = 0; i < players.Count(); i++)
+            {
+                Instantiate(playerListItemPrefab, playerListContent).GetComponent<PlayerListitem>().SetUp(players[i]);
+
+            }
         }
 
         public override void OnCreateRoomFailed(short returnCode, string message)
@@ -72,6 +85,8 @@ namespace SAE
         {
             PhotonNetwork.JoinRoom(info.Name);
             MenuManager.Instance.OpenMenu("Loading");
+
+            
         }
 
         public override void OnRoomListUpdate(List<RoomInfo> roomList)
@@ -85,6 +100,11 @@ namespace SAE
                 Instantiate(_roomListItemPrefab, _roomListContent).GetComponent<RoomListItem>().Setup(roomList[i]);
             }
         }
+        public override void OnPlayerEnteredRoom(Player newPlayer)
+        {
+            Instantiate(playerListItemPrefab, playerListContent).GetComponent<PlayerListitem>().SetUp(newPlayer);
+        }
+        
     }
 
 }
