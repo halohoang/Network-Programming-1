@@ -2,26 +2,29 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
+using UnityEngine.UI;
+using TMPro;
 
 public class PlayerController : MonoBehaviourPun, IPunObservable
 {
     [SerializeField] SpriteRenderer spriteRenderer;
     [SerializeField] new Rigidbody2D rigidbody;
     [SerializeField] GameObject cameraObject;
+    [SerializeField] TMP_Text NicknameText;
 
-
-    //[SerializeField] UnityEngine.UI.Text nicknameText;
     [SerializeField] float moveSpeed;
    
     
     private float horizontal;
     private float vertical;
-    
+
+    public Camera cam;
+    Vector2 mousePos;
 
     private void Start()
     {
-       // nicknameText.text = photonView.Owner.NickName;
-       // SetLocalColors();
+       NicknameText.text = photonView.Owner.NickName;
+        SetLocalColors();
 
         if (!photonView.IsMine)
         {
@@ -32,12 +35,14 @@ public class PlayerController : MonoBehaviourPun, IPunObservable
     private void SetLocalColors()
     {
         Color color = GetColorForPlayerById(photonView.OwnerActorNr);
-        spriteRenderer.color = color;
-        //nicknameText.color = color;
+        //spriteRenderer.color = color;
+       NicknameText.color = color;
 
     }
+    [PunRPC]
+    void FlipXRPC(float axis) => spriteRenderer.flipX = axis == -1;
 
-        private Color GetColorForPlayerById(int id)
+    private Color GetColorForPlayerById(int id)
         {
             return Color.HSVToRGB((float)id / 10f, 1, 1);
         }
@@ -52,20 +57,20 @@ public class PlayerController : MonoBehaviourPun, IPunObservable
           
 
             rigidbody.velocity = new Vector2(horizontal * moveSpeed, vertical*moveSpeed);
-            
+
+            mousePos = cam.ScreenToWorldPoint(Input.mousePosition);
 
 
+            Vector2 lookDir = mousePos - rigidbody.position;
+            //float angle = Mathf.Atan2(lookDir.y. lookDir.x);
         }
-
+       
 
     }
 
    
 
-    /*private void OnDrawGizmos()
-    {
-        Gizmos.DrawWireCube(transform.position + (Vector3)groundedCheckOffset, groundedCheckSize);
-    }*/
+    
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
