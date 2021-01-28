@@ -7,11 +7,12 @@ public class PlayerController : MonoBehaviourPun, IPunObservable
 {
     [SerializeField] SpriteRenderer spriteRenderer;
     [SerializeField] new Rigidbody2D rigidbody;
-    
+    [SerializeField] GameObject cameraObject;
 
-    [SerializeField] UnityEngine.UI.Text NickNameText;
+
+    //[SerializeField] UnityEngine.UI.Text nicknameText;
     [SerializeField] float moveSpeed;
-    [SerializeField] Vector2 groundedCheckSize;
+   
     
     private float horizontal;
     private float vertical;
@@ -19,22 +20,27 @@ public class PlayerController : MonoBehaviourPun, IPunObservable
 
     private void Start()
     {
-        NickNameText.text = photonView.Owner.NickName;
-        SetLocalColors();
-        
+       // nicknameText.text = photonView.Owner.NickName;
+       // SetLocalColors();
+
+        if (!photonView.IsMine)
+        {
+            cameraObject.SetActive(false);
+        }
     }
 
     private void SetLocalColors()
     {
         Color color = GetColorForPlayerById(photonView.OwnerActorNr);
-        NickNameText.color = color;
+        spriteRenderer.color = color;
+        //nicknameText.color = color;
 
     }
 
-  private Color GetColorForPlayerById(int id)
-    {
-        return Color.HSVToRGB((float)id / 10f, 1, 1);
-    }
+        private Color GetColorForPlayerById(int id)
+        {
+            return Color.HSVToRGB((float)id / 10f, 1, 1);
+        }
 
     private void FixedUpdate()
     {
@@ -43,8 +49,8 @@ public class PlayerController : MonoBehaviourPun, IPunObservable
             var oldVertical = vertical;
             horizontal = Input.GetAxis("Horizontal");
             vertical = Input.GetAxis("Vertical");
+          
 
-            
             rigidbody.velocity = new Vector2(horizontal * moveSpeed, rigidbody.velocity.y);
 
         }
@@ -54,25 +60,10 @@ public class PlayerController : MonoBehaviourPun, IPunObservable
 
    
 
-    [PunRPC]
-    private bool IsGrounded()
+    /*private void OnDrawGizmos()
     {
-        var hits = Physics2D.BoxCastAll(transform.position, groundedCheckSize, 0, Vector2.zero, 0);
-
-        foreach (var hit in hits)
-        {
-            if (hit.collider.gameObject != gameObject)
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private void OnDrawGizmos()
-    {
-        Gizmos.DrawWireCube(transform.position, groundedCheckSize);
-    }
+        Gizmos.DrawWireCube(transform.position + (Vector3)groundedCheckOffset, groundedCheckSize);
+    }*/
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
