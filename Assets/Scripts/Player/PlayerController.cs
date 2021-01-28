@@ -51,11 +51,13 @@ public class PlayerController : MonoBehaviourPun, IPunObservable
             vertical = Input.GetAxis("Vertical");
           
 
-            rigidbody.velocity = new Vector2(horizontal * moveSpeed, rigidbody.velocity.y);
+            rigidbody.velocity = new Vector2(horizontal * moveSpeed, vertical*moveSpeed);
+            
+
 
         }
 
-      
+
     }
 
    
