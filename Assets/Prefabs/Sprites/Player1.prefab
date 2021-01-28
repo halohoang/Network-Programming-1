@@ -116,7 +116,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3ecc19175d340435197f2122a9613864, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  spriteRenderer: {fileID: 7979777637146936701}
+  rigidbody: {fileID: 8809299685850732699}
+  NickNameText: {fileID: 0}
   moveSpeed: 5
-  rb: {fileID: 0}
-  cam: {fileID: 0}
-  anim: {fileID: 0}
+  groundedCheckSize: {x: 0, y: 0}
